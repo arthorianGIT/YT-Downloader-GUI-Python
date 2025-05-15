@@ -1,7 +1,6 @@
 import yt_dlp
+import asyncio
 
-def video_info(url):
-    video_url = url.get()
-    with yt_dlp.YoutubeDL() as yt_dwn:
-        info = yt_dwn.extract_info(video_url, download=False)
+async def video_info(url):
+    info = await asyncio.to_thread(yt_dlp.YoutubeDL().extract_info, url, download=False)
     return info
