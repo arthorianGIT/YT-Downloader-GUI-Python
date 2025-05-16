@@ -5,6 +5,9 @@ import aiohttp
 from io import BytesIO
 import asyncio
 import threading
+from tkinter.filedialog import askdirectory
+
+directory = 'C:/'
 
 def interface():
     app = ctk.CTk()
@@ -36,6 +39,7 @@ def interface():
         threading.Thread(target=run_video_information).start()
     
     def run_video_audio_download():
+        global directory
         v_url = url.get().strip()
         f_value = format_value.get()
         v_ext_value = video_ext_value.get()
@@ -43,14 +47,18 @@ def interface():
         a_kbps_value = audio_kbps_value.get()
         v_scale_value = video_scale_value.get()
         if f_value == 'Video+Audio':
-            asyncio.run(download_both(v_url, v_ext_value, v_scale_value, a_ext_value, a_kbps_value))
+            asyncio.run(download_both(v_url, v_ext_value, v_scale_value, a_ext_value, a_kbps_value, directory))
         elif f_value == 'Video':
-            asyncio.run(download_video(v_url, v_ext_value, v_scale_value))
+            asyncio.run(download_video(v_url, v_ext_value, v_scale_value, directory))
         elif f_value == 'Audio':
-            asyncio.run(download_audio(v_url, a_ext_value, a_kbps_value))
+            asyncio.run(download_audio(v_url, a_ext_value, a_kbps_value, directory))
     
     def start_download_video_audio():
         threading.Thread(target=run_video_audio_download).start()
+    
+    def change_directory():
+        global directory
+        directory = askdirectory()
 
     frame1 = ctk.CTkFrame(app, width=400, height=500, fg_color='#2c2c2c', bg_color='#2c2c2c')
     frame2 = ctk.CTkFrame(app, width=425, height=235, fg_color='#2c2c2c', bg_color='#2c2c2c')
@@ -59,9 +67,11 @@ def interface():
     url = ctk.CTkEntry(app, fg_color='#242424', bg_color='#2c2c2c', corner_radius=5, text_color='white',
                         font=('Helvetica', 14, 'bold'), width=230)
     get_info_button = ctk.CTkButton(app, text='Video Info', fg_color='#1474df', bg_color='#1474df', corner_radius=3,
-                                    command=start_video_information)
+                                    command=start_video_information, width=100)
     download_button = ctk.CTkButton(app, text='Download', fg_color='#1474df', bg_color='#1474df', corner_radius=3,
-                                    command=start_download_video_audio)
+                                    command=start_download_video_audio, width=100)
+    directory_button = ctk.CTkButton(app, text='Save Directory', fg_color='#1474df', bg_color='#1474df', corner_radius=3,
+                                     command=change_directory)
     description_textbox = ctk.CTkTextbox(app, width=375, height=200, font=('Helvetica', 17, 'bold'), border_width=2,
                                          fg_color='#242424', text_color='white', bg_color='#2c2c2c')
     format_value = ctk.StringVar(value='Video+Audio')
@@ -92,8 +102,9 @@ def interface():
 
     preview.place(x=85, y=50)
     url.place(x=120, y=310)
-    get_info_button.place(x=200, y=365)
-    download_button.place(x=165, y=420)
+    get_info_button.place(x=250, y=365)
+    download_button.place(x=180, y=420)
+    directory_button.place(x=100, y=365)
     description_textbox.place(x=485, y=30)
     download_format_combobox.place(x=485, y=290)
     download_video_ext_combobox.place(x=485, y=345)
